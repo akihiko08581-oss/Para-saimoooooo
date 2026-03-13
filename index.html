@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para sa Lab ko</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fdf2f2; 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            touch-action: manipulation; /* Optimizes for mobile taps */
+        }
+
+        .envelope {
+            position: relative;
+            width: 85%;
+            max-width: 380px;
+            background: #f8d7da; 
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 100;
+        }
+
+        .container {
+            background: #fffdf5; 
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); 
+            padding: 35px 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2c0c0;
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 { font-weight: 700; color: #b05a6f; font-size: 24px; margin-bottom: 25px; }
+        .emoji { font-size: 50px; margin-bottom: 10px; }
+
+        button {
+            padding: 15px 25px; /* Bigger tap area for mobile */
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s transform;
+            margin: 8px;
+            display: inline-block;
+            position: relative;
+            pointer-events: auto;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .yes-btn { background-color: #b05a6f; color: #fff8f8; z-index: 101; }
+        .no-btn { background-color: #fffdf5; color: #b05a6f; border: 2px solid #e2c0c0; }
+
+        .hidden { display: none !important; }
+
+        img { width: 95%; border-radius: 10px; margin: 15px 0; max-height: 180px; border: 4px solid #f8d7da; object-fit: cover; }
+
+        .floating-message {
+            position: fixed;
+            font-size: 20px;
+            font-weight: 700;
+            color: #b05a6f;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+            animation: floatUp 4s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-20vh); opacity: 0; }
+        }
+
+        .petal {
+            position: absolute;
+            background-color: #f7ced7;
+            border-radius: 150% 0 150% 0;
+            animation: fall linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="petals-container"></div>
+
+    <div class="envelope">
+        <div class="container">
+            <div id="step1">
+                <div class="emoji">💌</div>
+                <h1>Lab ko nimo or No?</h1>
+                <button id="yes1" class="yes-btn" onclick="nextStep('step1', 'step2')">Lab ko nimo</button>
+                <button id="no1" class="no-btn" ontouchstart="moveAndGrow(this, 'yes1')" onmouseover="moveAndGrow(this, 'yes1')">No</button>
+            </div>
+
+            <div id="step-sad" class="hidden">
+                <div class="emoji">😢</div>
+                <h1>Dili jud? 💔</h1>
+                <img id="sad-cat-gif" src="" alt="Sad cat">
+                <br>
+                <button id="yes-sad" class="yes-btn" onclick="nextStep('step-sad', 'step2')">Lab na diay</button>
+                <button id="no-sad" class="no-btn" ontouchstart="moveAndGrow(this, 'yes-sad')" onmouseover="moveAndGrow(this, 'yes-sad')">No</button>
+            </div>
+
+            <div id="step2" class="hidden">
+                <div class="emoji">🤨</div>
+                <h1>Sure na jud na?</h1>
+                <button id="yes2" class="yes-btn" onclick="showFinal()">Yes!</button>
+                <button id="no2" class="no-btn" ontouchstart="moveAndGrow(this, 'yes2')" onmouseover="moveAndGrow(this, 'yes2')">No</button>
+            </div>
+
+            <div id="final" class="hidden">
+                <h1>YAY! I LOVE YOU! ❤️</h1>
+                <img id="happy-cat-gif" src="" alt="Happy cat">
+                <p>Salamat kay naa ka permi sa akong kilid.</p>
+                <p style="font-style: italic; color: #b05a6f; margin-top: 15px;">"You make my heart go 100fps."</p>
+                <p style="font-weight: 700; margin-top: 20px;">Love,<br>Baby mo</p>
+            </div>
+        </div>
+    </div>
+
+    <audio id="sad-audio" src="https://cdn.discordapp.com/attachments/1481849982360227933/1481852593394155521/Sad_mouse_with_violin.mp3?ex=69b4d245&is=69b380c5&hm=21586196484f9dd3869694b68f031d685728a4047412482796a939345405df8a&" preload="auto"></audio>
+    <audio id="happy-audio" src="https://cdn.discordapp.com/attachments/1481849982360227933/1481850726446796903/Kalapastangan.mp3?ex=69b4d088&is=69b37f08&hm=4d5f60147a9c78a1da29c95ad9e880e0508db765ce1c4b800920e68c3ed64c9e&" preload="auto"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        let yesScale = 1;
+
+        // Falling Petals Logic
+        function createPetal() {
+            const container = document.getElementById('petals-container');
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.width = Math.random() * 12 + 8 + 'px';
+            petal.style.height = petal.style.width;
+            petal.style.animationDuration = Math.random() * 3 + 2 + 's';
+            container.appendChild(petal);
+            setTimeout(() => petal.remove(), 5000);
+        }
+        setInterval(createPetal, 400);
+
+        function nextStep(currentId, nextId) {
+            document.getElementById(currentId).classList.add('hidden');
+            document.getElementById(nextId).classList.remove('hidden');
+            yesScale = 1;
+            const nextYes = document.querySelector(`#${nextId} .yes-btn`);
+            if(nextYes) nextYes.style.transform = `scale(1)`;
+            document.getElementById('sad-audio').pause();
+            document.getElementById('sad-audio').currentTime = 0;
+            resetNoButtons();
+        }
+
+        function goSad() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step-sad').classList.remove('hidden');
+            const sadGifs = [
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHphZDZzNTRia2t3c3RmNHYzemp0aW82cmVkYmhxbDl5dTFyc2ZlMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/7AzEXdIb1wyCTWJntb/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHphZDZzNTRia2t3c3RmNHYzemp0aW82cmVkYmhxbDl5dTFyc2ZlMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/TZBED1pP5m8N2/giphy.gif"
+            ];
+            document.getElementById('sad-cat-gif').src = sadGifs[Math.floor(Math.random() * sadGifs.length)];
+            document.getElementById('sad-audio').play().catch(e => {});
+        }
+
+        function moveAndGrow(noBtn, yesBtnId) {
+            // Boundaries for mobile screen
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            
+            noBtn.style.position = 'fixed'; 
+            noBtn.style.left = Math.max(10, Math.random() * maxX) + 'px';
+            noBtn.style.top = Math.max(10, Math.random() * maxY) + 'px';
+
+            const yesBtn = document.getElementById(yesBtnId);
+            yesScale += 0.25; 
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            if(noBtn.id === "no1" && yesScale > 3) goSad();
+        }
+
+        function resetNoButtons() {
+            const buttons = document.querySelectorAll('.no-btn');
+            buttons.forEach(btn => {
+                btn.style.position = 'relative';
+                btn.style.left = '0px';
+                btn.style.top = '0px';
+            });
+        }
+
+        const messages = ["I LOVE YOU", "Pangga tika", "Gwapa!", "Mwah!", "Forever", "Lab nako nimo", "Ikaw ra jud", "Iloveyousomuching asawa ko", "Mwa!", "XOXO", "❤️", "💖", "🥰", "✨", "🔥", "Bestie + Lover", "Keep smiling", 
+            "Don't ever change", "Proud of you", "Cheering for you", "You're the best", "Amoooores", 
+            "Amusing!", "Special", "One and only", "My constant", "Always", "Infinity", "Beyond", 
+            "Tinkerbell", "Baby mo", "Baby ko", "Labyu so much!"];
+
+        function createFloatingMsg() {
+            const msg = document.createElement('div');
+            msg.className = 'floating-message';
+            msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+            msg.style.left = Math.random() * 80 + 10 + 'vw';
+            msg.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 4000);
+        }
+
+        function showFinal() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('final').classList.remove('hidden');
+            
+            const happyGifs = [
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2hzaTNndHp2ZWx2MHpkYTI5a2NhMTdjZW9qZmhjZnhlYXN0ZTl1MiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Ncn7y0xz7ZfAxEcEml/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2hzaTNndHp2ZWx2MHpkYTI5a2NhMTdjZW9qZmhjZnhlYXN0ZTl1MiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/T70hpBP1L0N7U0jtkq/giphy.gif"
+            ];
+            document.getElementById('happy-cat-gif').src = happyGifs[Math.floor(Math.random() * happyGifs.length)];
+            
+            document.getElementById('happy-audio').play().catch(e => {});
+            setInterval(createFloatingMsg, 400);
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+        }
+    </script>
+</body>
+</html>
